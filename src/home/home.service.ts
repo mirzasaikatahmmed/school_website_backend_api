@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { CreateHomeDto } from './dto/create-home.dto';
-import { UpdateHomeDto } from './dto/update-home.dto';
 
 @Injectable()
 export class HomeService {
-  create(createHomeDto: CreateHomeDto) {
+  create() {
     return 'This action adds a new home';
   }
 
@@ -16,7 +14,7 @@ export class HomeService {
     return `This action returns a #${id} home`;
   }
 
-  update(id: number, updateHomeDto: UpdateHomeDto) {
+  update(id: number) {
     return `This action updates a #${id} home`;
   }
 

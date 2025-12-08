@@ -1,7 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateGalleryDto, UpdateGalleryDto, CreatePhotoDto } from './dto/gallery.dto';
+import {
+  CreateGalleryDto,
+  UpdateGalleryDto,
+  CreatePhotoDto,
+} from './dto/gallery.dto';
 import { Gallery } from './entities/gallery.entity';
 import { Photo } from './entities/photo.entity';
 
@@ -65,7 +69,9 @@ export class GalleriesService {
       where: { id: photoId, gallery: { id: galleryId } },
     });
     if (!photo) {
-      throw new NotFoundException(`Photo #${photoId} not found in gallery #${galleryId}`);
+      throw new NotFoundException(
+        `Photo #${photoId} not found in gallery #${galleryId}`,
+      );
     }
     return this.photoRepository.remove(photo);
   }

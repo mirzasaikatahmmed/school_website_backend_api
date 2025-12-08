@@ -1,7 +1,20 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Query,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { GalleriesService } from './galleries.service';
-import { CreateGalleryDto, UpdateGalleryDto, CreatePhotoDto } from './dto/gallery.dto';
+import {
+  CreateGalleryDto,
+  UpdateGalleryDto,
+  CreatePhotoDto,
+} from './dto/gallery.dto';
 
 @ApiTags('galleries')
 @Controller('galleries')

@@ -11,7 +11,10 @@ describe('NoticesController', () => {
       providers: [NoticesService],
     }).compile();
 
-    controller = module.get<NoticesController>(NoticesController);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    controller = module.get<NoticesController>(
+      NoticesController,
+    ) as unknown as NoticesController;
   });
 
   it('should be defined', () => {

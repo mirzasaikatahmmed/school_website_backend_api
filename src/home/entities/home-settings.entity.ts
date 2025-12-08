@@ -1,4 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, UpdateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('home_settings')
 export class HomeSettings {
@@ -15,7 +20,7 @@ export class HomeSettings {
   heroImageUrl: string;
 
   @Column('simple-array', { nullable: true })
-  quickLinks: string[]; 
+  quickLinks: string[];
   // e.g. ["about", "admission", "notices"]
 
   @Column('simple-array', { nullable: true })
