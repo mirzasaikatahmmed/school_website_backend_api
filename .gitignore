@@ -43,6 +43,7 @@ lerna-debug.log*
 .env.local
 doc.md
 DEPLOY_ON_CASAOS.md
+docker-compose.casaos.yaml
 
 # temp directory
 .temp
