@@ -42,6 +42,7 @@ lerna-debug.log*
 .env.production.local
 .env.local
 doc.md
+DEPLOY_ON_CASAOS.md
 
 # temp directory
 .temp
