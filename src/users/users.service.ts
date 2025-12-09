@@ -1,5 +1,9 @@
 import * as bcrypt from 'bcrypt';
-import { Injectable, ConflictException, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  ConflictException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -30,7 +34,7 @@ export class UsersService {
       const savedUser = await this.usersRepository.save(user);
       return savedUser;
     } catch (error) {
-      if (error.code === '23505') {
+      if ((error as { code: string }).code === '23505') {
         throw new ConflictException('User with this email already exists');
       }
       throw new InternalServerErrorException();

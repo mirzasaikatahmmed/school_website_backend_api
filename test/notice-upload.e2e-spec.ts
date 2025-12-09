@@ -30,7 +30,8 @@ describe('NoticeController (e2e)', () => {
 
   it('/notices (POST) should handle file upload', async () => {
     const token = jwtService.sign({ sub: 'test-user-id', role: 'admin' });
-    
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return request(app.getHttpServer())
       .post('/notices')
       .set('Authorization', `Bearer ${token}`)
@@ -40,10 +41,14 @@ describe('NoticeController (e2e)', () => {
       .attach('files', Buffer.from('dummy content 2'), 'test2.txt')
       .expect(201)
       .then((response) => {
-        expect(response.body.title).toBe('Test Notice with Check');
-        expect(response.body.attachments).toHaveLength(2);
-        expect(response.body.attachments[0].name).toBe('test1.txt');
-        expect(response.body.attachments[1].name).toBe('test2.txt');
+        const body = response.body as {
+          title: string;
+          attachments: { name: string }[];
+        };
+        expect(body.title).toBe('Test Notice with Check');
+        expect(body.attachments).toHaveLength(2);
+        expect(body.attachments[0].name).toBe('test1.txt');
+        expect(body.attachments[1].name).toBe('test2.txt');
       });
   });
 });

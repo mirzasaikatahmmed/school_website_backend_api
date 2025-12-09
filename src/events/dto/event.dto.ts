@@ -43,12 +43,12 @@ export class CreateEventDto {
   @Transform(({ value }) => {
     if (typeof value === 'string') {
       try {
-        return JSON.parse(value);
+        return JSON.parse(value) as string[];
       } catch {
         return [];
       }
     }
-    return value;
+    return value as string[];
   })
   photos?: string[];
 }

@@ -34,12 +34,12 @@ export class CreateNoticeDto {
   @Transform(({ value }) => {
     if (typeof value === 'string') {
       try {
-        return JSON.parse(value);
+        return JSON.parse(value) as CreateNoticeAttachmentDto[];
       } catch {
         return [];
       }
     }
-    return value;
+    return value as CreateNoticeAttachmentDto[];
   })
   attachments?: CreateNoticeAttachmentDto[];
 
