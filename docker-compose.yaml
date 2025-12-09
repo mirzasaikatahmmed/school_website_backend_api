@@ -26,9 +26,13 @@ services:
       DB_NAME: school_db
       JWT_SECRET: superSecretKey123!
       JWT_REFRESH_SECRET: superSecretRefreshKey123!
+    volumes:
+      - uploads_data:/app/uploads
+      - ./.env:/app/.env:ro
     depends_on:
       - postgres
     restart: always
 
 volumes:
   postgres_data:
+  uploads_data:

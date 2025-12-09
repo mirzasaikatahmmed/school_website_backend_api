@@ -45,6 +45,10 @@ doc.md
 DEPLOY_ON_CASAOS.md
 docker-compose.casaos.yaml
 
+# Uploads directory (keep structure, ignore files)
+uploads/**/*
+!uploads/**/.gitkeep
+
 # temp directory
 .temp
 .tmp
