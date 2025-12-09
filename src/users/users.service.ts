@@ -1,5 +1,5 @@
 import * as bcrypt from 'bcrypt';
-import { Injectable } from '@nestjs/common';
+import { Injectable, ConflictException, InternalServerErrorException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -21,13 +21,20 @@ export class UsersService {
   }
 
   async create(userData: CreateUserDto): Promise<User> {
-    if (userData.password) {
-      const salt = await bcrypt.genSalt();
-      userData.password = await bcrypt.hash(userData.password, salt);
+    try {
+      if (userData.password) {
+        const salt = await bcrypt.genSalt();
+        userData.password = await bcrypt.hash(userData.password, salt);
+      }
+      const user = this.usersRepository.create(userData);
+      const savedUser = await this.usersRepository.save(user);
+      return savedUser;
+    } catch (error) {
+      if (error.code === '23505') {
+        throw new ConflictException('User with this email already exists');
+      }
+      throw new InternalServerErrorException();
     }
-    const user = this.usersRepository.create(userData);
-    const savedUser = await this.usersRepository.save(user);
-    return savedUser;
   }
 
   async update(id: string, updateData: Partial<User>): Promise<User | null> {

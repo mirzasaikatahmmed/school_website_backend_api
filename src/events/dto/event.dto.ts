@@ -1,5 +1,6 @@
 import { IsString, IsOptional, IsArray } from 'class-validator';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 
 export class CreateEventDto {
   @ApiProperty({ example: 'Annual Sports Day' })
@@ -39,6 +40,16 @@ export class CreateEventDto {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      try {
+        return JSON.parse(value);
+      } catch {
+        return [];
+      }
+    }
+    return value;
+  })
   photos?: string[];
 }
 

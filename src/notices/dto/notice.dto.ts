@@ -1,5 +1,5 @@
 import { IsString, IsOptional, IsArray, ValidateNested } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 
 export class CreateNoticeAttachmentDto {
@@ -31,6 +31,16 @@ export class CreateNoticeDto {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CreateNoticeAttachmentDto)
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      try {
+        return JSON.parse(value);
+      } catch {
+        return [];
+      }
+    }
+    return value;
+  })
   attachments?: CreateNoticeAttachmentDto[];
 
   @ApiProperty({ example: ['general', 'urgent'], required: false })
