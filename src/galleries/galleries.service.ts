@@ -55,6 +55,18 @@ export class GalleriesService {
     return this.photoRepository.save(photo);
   }
 
+  async addPhotos(galleryId: string, urls: string[], captions: string[] = []) {
+    const gallery = await this.findOne(galleryId);
+    const photos = urls.map((url, index) => {
+      return this.photoRepository.create({
+        url,
+        caption: captions[index] || undefined,
+        gallery,
+      });
+    });
+    return this.photoRepository.save(photos);
+  }
+
   async getPhotos(galleryId: string, page: number = 1, limit: number = 20) {
     const [items, total] = await this.photoRepository.findAndCount({
       where: { gallery: { id: galleryId } },
@@ -74,5 +86,11 @@ export class GalleriesService {
       );
     }
     return this.photoRepository.remove(photo);
+  }
+
+  async updateCover(id: string, coverUrl: string) {
+    const gallery = await this.findOne(id);
+    gallery.coverUrl = coverUrl;
+    return this.galleryRepository.save(gallery);
   }
 }

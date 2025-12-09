@@ -13,8 +13,8 @@ export class Photo {
   url: string;
 
   @ApiProperty({ description: 'Caption for the photo', required: false })
-  @Column({ nullable: true })
-  caption: string;
+  @Column({ type: 'varchar', nullable: true })
+  caption?: string;
 
   @ManyToOne(() => Gallery, (gallery) => gallery.photos)
   gallery: Gallery;
