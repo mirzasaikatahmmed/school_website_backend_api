@@ -51,3 +51,12 @@ export class CreateNoticeDto {
 }
 
 export class UpdateNoticeDto extends PartialType(CreateNoticeDto) {}
+
+export class UpdateNoticeMultipartDto extends UpdateNoticeDto {
+  @ApiProperty({
+    type: 'array',
+    items: { type: 'string', format: 'binary' },
+    required: false,
+  })
+  files?: any[];
+}

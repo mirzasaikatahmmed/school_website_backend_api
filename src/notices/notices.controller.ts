@@ -23,7 +23,11 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { existsSync, mkdirSync } from 'fs';
 import { NoticesService } from './notices.service';
-import { CreateNoticeDto, UpdateNoticeDto } from './dto/notice.dto';
+import {
+  CreateNoticeDto,
+  UpdateNoticeDto,
+  UpdateNoticeMultipartDto,
+} from './dto/notice.dto';
 import { Notice } from './entities/notice.entity';
 import { Public } from '../auth/decorators/public.decorator';
 
@@ -143,25 +147,7 @@ export class NoticeController {
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     description: 'Update Notice data with optional files',
-    schema: {
-      type: 'object',
-      properties: {
-        files: {
-          type: 'array',
-          items: {
-            type: 'string',
-            format: 'binary',
-          },
-        },
-        title: { type: 'string' },
-        summary: { type: 'string' },
-        bodyHtml: { type: 'string' },
-        categories: {
-          type: 'array',
-          items: { type: 'string' },
-        },
-      },
-    },
+    type: UpdateNoticeMultipartDto,
   })
   @ApiOperation({ summary: 'Update a notice' })
   @ApiResponse({
@@ -181,6 +167,8 @@ export class NoticeController {
         dto.attachments = [];
       }
       files.forEach((file) => {
+        // Ensure we are not duplicating if the same file is uploaded (logic can be improved if needed)
+        // For now, valid uploads are appened.
         dto.attachments?.push({
           name: file.originalname,
           url: `/uploads/notices/${file.filename}`,
