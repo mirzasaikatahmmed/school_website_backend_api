@@ -19,7 +19,13 @@ export class GalleriesService {
   ) {}
 
   create(createGalleryDto: CreateGalleryDto) {
-    const gallery = this.galleryRepository.create(createGalleryDto);
+    const { photos, ...rest } = createGalleryDto;
+    const gallery = this.galleryRepository.create(rest);
+    if (photos && photos.length > 0) {
+      gallery.photos = photos.map((url) =>
+        this.photoRepository.create({ url }),
+      );
+    }
     return this.galleryRepository.save(gallery);
   }
 
@@ -40,7 +46,19 @@ export class GalleriesService {
 
   async update(id: string, updateGalleryDto: UpdateGalleryDto) {
     const gallery = await this.findOne(id);
-    this.galleryRepository.merge(gallery, updateGalleryDto);
+    const { photos, ...rest } = updateGalleryDto;
+    this.galleryRepository.merge(gallery, rest);
+
+    if (photos && photos.length > 0) {
+      const newPhotos = photos.map((url) =>
+        this.photoRepository.create({ url }),
+      );
+      if (gallery.photos) {
+        gallery.photos.push(...newPhotos);
+      } else {
+        gallery.photos = newPhotos;
+      }
+    }
     return this.galleryRepository.save(gallery);
   }
 

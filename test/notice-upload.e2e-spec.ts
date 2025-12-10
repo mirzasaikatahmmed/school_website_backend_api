@@ -51,4 +51,37 @@ describe('NoticeController (e2e)', () => {
         expect(body.attachments[1].name).toBe('test2.txt');
       });
   });
+
+  it('/notices/:id (PATCH) should handle file update', async () => {
+    const token = jwtService.sign({ sub: 'test-user-id', role: 'admin' });
+
+    // First create a notice
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    const createResponse = await request(app.getHttpServer())
+      .post('/notices')
+      .set('Authorization', `Bearer ${token}`)
+      .field('title', 'Notice to Update')
+      .field('bodyHtml', '<p>Initial content</p>') // Added required field
+      .expect(201);
+
+    const noticeId = (createResponse.body as { id: string }).id;
+
+    // Then update it with files
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return request(app.getHttpServer())
+      .patch(`/notices/${noticeId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .field('title', 'Updated Notice Title')
+      .attach('files', Buffer.from('updated content'), 'updated.txt')
+      .expect(200)
+      .then((response) => {
+        const body = response.body as {
+          title: string;
+          attachments: { name: string }[];
+        };
+        expect(body.title).toBe('Updated Notice Title');
+        expect(body.attachments).toHaveLength(1);
+        expect(body.attachments[0].name).toBe('updated.txt');
+      });
+  });
 });

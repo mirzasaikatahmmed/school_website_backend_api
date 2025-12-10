@@ -136,11 +136,94 @@ export class EventsController {
 
   @ApiBearerAuth()
   @Patch(':id')
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        { name: 'featurePhoto', maxCount: 1 },
+        { name: 'photos', maxCount: 10 },
+      ],
+      {
+        storage: diskStorage({
+          destination: (req, file, cb) => {
+            const uploadPath = './uploads/events';
+            if (!existsSync(uploadPath)) {
+              mkdirSync(uploadPath, { recursive: true });
+            }
+            cb(null, uploadPath);
+          },
+          filename: (req, file, cb) => {
+            const uniqueSuffix =
+              Date.now() + '-' + Math.round(Math.random() * 1e9);
+            const ext = extname(file.originalname);
+            cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+          },
+        }),
+      },
+    ),
+  )
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description:
+      'Update event data with feature photo and optional gallery photos',
+    schema: {
+      type: 'object',
+      properties: {
+        featurePhoto: {
+          type: 'string',
+          format: 'binary',
+        },
+        photos: {
+          type: 'array',
+          items: {
+            type: 'string',
+            format: 'binary',
+          },
+        },
+        title: { type: 'string' },
+        date: { type: 'string' },
+        startTime: { type: 'string' },
+        endTime: { type: 'string' },
+        location: { type: 'string' },
+        bodyHtml: { type: 'string' },
+      },
+    },
+  })
   @ApiOperation({ summary: 'Update an event' })
   @ApiResponse({ status: 200, description: 'The updated event.', type: Event })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   @ApiResponse({ status: 404, description: 'Event not found.' })
-  update(@Param('id') id: string, @Body() dto: UpdateEventDto) {
+  update(
+    @Param('id') id: string,
+    @Body() dto: UpdateEventDto,
+    @UploadedFiles()
+    files?: {
+      featurePhoto?: Express.Multer.File[];
+      photos?: Express.Multer.File[];
+    },
+  ) {
+    if (files?.featurePhoto && files.featurePhoto.length > 0) {
+      dto.bannerUrl = `/uploads/events/${files.featurePhoto[0].filename}`;
+    }
+
+    if (files?.photos && files.photos.length > 0) {
+      if (!dto.photos) {
+        dto.photos = []; // Initialize logic might need to be smarter if we want to APPEND vs REPLACE.
+        // Usually, for update, replace might be expected or append.
+        // Let's assume replace or append based on business logic, but for now simple push.
+        // Actually, if it's a "replace" strategy for photos, we might want to overwrite.
+        // But the previous implementation logic was push. Let's stick to simple handling:
+        // If providing new photos, add them to the list?
+        // Or should we just let the service handle it?
+        // Let's simply prepare the DTO.
+      }
+      // Note: DTO photos is string[]. The service might overwrite or append.
+      // Current service implementation is generic specific update.
+      // Let's just create array if not exists.
+      if (!dto.photos) dto.photos = [];
+      files.photos.forEach((file) => {
+        dto.photos?.push(`/uploads/events/${file.filename}`);
+      });
+    }
     return this.service.update(id, dto);
   }
 

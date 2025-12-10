@@ -19,7 +19,11 @@ import {
   ApiConsumes,
   ApiBody,
 } from '@nestjs/swagger';
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import {
+  FileInterceptor,
+  FilesInterceptor,
+  FileFieldsInterceptor,
+} from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { existsSync, mkdirSync } from 'fs';
@@ -37,36 +41,43 @@ export class GalleriesController {
   @ApiBearerAuth()
   @Post()
   @UseInterceptors(
-    FileInterceptor('cover', {
-      storage: diskStorage({
-        destination: (req, file, cb) => {
-          const uploadPath = './uploads/galleries';
-          if (!existsSync(uploadPath)) {
-            mkdirSync(uploadPath, { recursive: true });
+    FileFieldsInterceptor(
+      [
+        { name: 'cover', maxCount: 1 },
+        { name: 'photos', maxCount: 20 },
+      ],
+      {
+        storage: diskStorage({
+          destination: (req, file, cb) => {
+            const uploadPath = './uploads/galleries';
+            if (!existsSync(uploadPath)) {
+              mkdirSync(uploadPath, { recursive: true });
+            }
+            cb(null, uploadPath);
+          },
+          filename: (req, file, cb) => {
+            const uniqueSuffix =
+              Date.now() + '-' + Math.round(Math.random() * 1e9);
+            const ext = extname(file.originalname);
+            cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+          },
+        }),
+        fileFilter: (req, file, cb) => {
+          if (!file.mimetype.match(/\/(jpg|jpeg|png|gif|webp)$/)) {
+            return cb(new Error('Only image files are allowed!'), false);
           }
-          cb(null, uploadPath);
+          cb(null, true);
         },
-        filename: (req, file, cb) => {
-          const uniqueSuffix =
-            Date.now() + '-' + Math.round(Math.random() * 1e9);
-          const ext = extname(file.originalname);
-          cb(null, `cover-${uniqueSuffix}${ext}`);
+        limits: {
+          fileSize: 5 * 1024 * 1024, // 5MB
         },
-      }),
-      fileFilter: (req, file, cb) => {
-        if (!file.mimetype.match(/\/(jpg|jpeg|png|gif|webp)$/)) {
-          return cb(new Error('Only image files are allowed!'), false);
-        }
-        cb(null, true);
       },
-      limits: {
-        fileSize: 5 * 1024 * 1024, // 5MB
-      },
-    }),
+    ),
   )
   @ApiConsumes('multipart/form-data')
   @ApiBody({
-    description: 'Create gallery with optional cover photo',
+    description:
+      'Create gallery with optional cover photo and multiple gallery photos',
     schema: {
       type: 'object',
       required: ['title'],
@@ -79,6 +90,14 @@ export class GalleriesController {
           type: 'string',
           format: 'binary',
           description: 'Optional cover image',
+        },
+        photos: {
+          type: 'array',
+          items: {
+            type: 'string',
+            format: 'binary',
+          },
+          description: 'Optional gallery photos',
         },
       },
     },
@@ -93,10 +112,26 @@ export class GalleriesController {
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   create(
     @Body() createGalleryDto: CreateGalleryDto,
-    @UploadedFile() file?: Express.Multer.File,
+    @UploadedFiles()
+    files?: {
+      cover?: Express.Multer.File[];
+      photos?: Express.Multer.File[];
+    },
   ) {
-    const coverUrl = file ? `/uploads/galleries/${file.filename}` : undefined;
-    return this.galleriesService.create({ ...createGalleryDto, coverUrl });
+    const coverUrl =
+      files?.cover && files.cover.length > 0
+        ? `/uploads/galleries/${files.cover[0].filename}`
+        : undefined;
+    const photoUrls =
+      files?.photos && files.photos.length > 0
+        ? files.photos.map((f) => `/uploads/galleries/${f.filename}`)
+        : undefined;
+
+    return this.galleriesService.create({
+      ...createGalleryDto,
+      coverUrl,
+      photos: photoUrls,
+    });
   }
 
   @Public()
@@ -123,36 +158,43 @@ export class GalleriesController {
   @ApiBearerAuth()
   @Patch(':id')
   @UseInterceptors(
-    FileInterceptor('cover', {
-      storage: diskStorage({
-        destination: (req, file, cb) => {
-          const uploadPath = './uploads/galleries';
-          if (!existsSync(uploadPath)) {
-            mkdirSync(uploadPath, { recursive: true });
+    FileFieldsInterceptor(
+      [
+        { name: 'cover', maxCount: 1 },
+        { name: 'photos', maxCount: 20 },
+      ],
+      {
+        storage: diskStorage({
+          destination: (req, file, cb) => {
+            const uploadPath = './uploads/galleries';
+            if (!existsSync(uploadPath)) {
+              mkdirSync(uploadPath, { recursive: true });
+            }
+            cb(null, uploadPath);
+          },
+          filename: (req, file, cb) => {
+            const uniqueSuffix =
+              Date.now() + '-' + Math.round(Math.random() * 1e9);
+            const ext = extname(file.originalname);
+            cb(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+          },
+        }),
+        fileFilter: (req, file, cb) => {
+          if (!file.mimetype.match(/\/(jpg|jpeg|png|gif|webp)$/)) {
+            return cb(new Error('Only image files are allowed!'), false);
           }
-          cb(null, uploadPath);
+          cb(null, true);
         },
-        filename: (req, file, cb) => {
-          const uniqueSuffix =
-            Date.now() + '-' + Math.round(Math.random() * 1e9);
-          const ext = extname(file.originalname);
-          cb(null, `cover-${uniqueSuffix}${ext}`);
+        limits: {
+          fileSize: 5 * 1024 * 1024, // 5MB
         },
-      }),
-      fileFilter: (req, file, cb) => {
-        if (!file.mimetype.match(/\/(jpg|jpeg|png|gif|webp)$/)) {
-          return cb(new Error('Only image files are allowed!'), false);
-        }
-        cb(null, true);
       },
-      limits: {
-        fileSize: 5 * 1024 * 1024, // 5MB
-      },
-    }),
+    ),
   )
   @ApiConsumes('multipart/form-data')
   @ApiBody({
-    description: 'Update gallery with optional cover photo',
+    description:
+      'Update gallery with optional cover photo and multiple gallery photos',
     schema: {
       type: 'object',
       properties: {
@@ -164,6 +206,14 @@ export class GalleriesController {
           type: 'string',
           format: 'binary',
           description: 'Optional cover image',
+        },
+        photos: {
+          type: 'array',
+          items: {
+            type: 'string',
+            format: 'binary',
+          },
+          description: 'Optional gallery photos',
         },
       },
     },
@@ -179,10 +229,26 @@ export class GalleriesController {
   update(
     @Param('id') id: string,
     @Body() updateGalleryDto: UpdateGalleryDto,
-    @UploadedFile() file?: Express.Multer.File,
+    @UploadedFiles()
+    files?: {
+      cover?: Express.Multer.File[];
+      photos?: Express.Multer.File[];
+    },
   ) {
-    const coverUrl = file ? `/uploads/galleries/${file.filename}` : undefined;
-    return this.galleriesService.update(id, { ...updateGalleryDto, coverUrl });
+    const coverUrl =
+      files?.cover && files.cover.length > 0
+        ? `/uploads/galleries/${files.cover[0].filename}`
+        : undefined;
+    const photoUrls =
+      files?.photos && files.photos.length > 0
+        ? files.photos.map((f) => `/uploads/galleries/${f.filename}`)
+        : undefined;
+
+    return this.galleriesService.update(id, {
+      ...updateGalleryDto,
+      coverUrl,
+      photos: photoUrls,
+    });
   }
 
   @ApiBearerAuth()

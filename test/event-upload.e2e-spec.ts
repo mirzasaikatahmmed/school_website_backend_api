@@ -59,4 +59,47 @@ describe('EventsController (e2e)', () => {
         expect(body.photos[1]).toMatch(/^\/uploads\/events\/photos-/);
       });
   });
+
+  it('/events/:id (PATCH) should handle file update', async () => {
+    const token = jwtService.sign({ sub: 'test-admin-id', role: 'admin' });
+
+    // First create an event
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    const createResponse = await request(app.getHttpServer())
+      .post('/events')
+      .set('Authorization', `Bearer ${token}`)
+      .field('title', 'Event to Update')
+      .field('date', '2025-01-20')
+      .field('location', 'Test Location')
+      .expect(201);
+
+    const eventId = (createResponse.body as { id: string }).id;
+
+    // Then update it with files
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    return request(app.getHttpServer())
+      .patch(`/events/${eventId}`)
+      .set('Authorization', `Bearer ${token}`)
+      .field('title', 'Updated Event Title')
+      .attach(
+        'featurePhoto',
+        Buffer.from('updated feature image'),
+        'updated_feature.jpg',
+      )
+      .attach('photos', Buffer.from('new gallery photo'), 'new_gallery.jpg')
+      .expect(200)
+      .then((response) => {
+        const body = response.body as {
+          title: string;
+          bannerUrl: string;
+          photos: string[];
+        };
+        expect(body.title).toBe('Updated Event Title');
+        expect(body.bannerUrl).toMatch(
+          /^\/uploads\/events\/featurePhoto-.*\.jpg$/,
+        );
+        expect(body.photos).toHaveLength(1); // Assuming it was empty initially
+        expect(body.photos[0]).toMatch(/^\/uploads\/events\/photos-.*\.jpg$/);
+      });
+  });
 });

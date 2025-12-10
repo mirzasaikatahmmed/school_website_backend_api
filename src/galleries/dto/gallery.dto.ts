@@ -10,6 +10,15 @@ export class CreateGalleryDto {
   @IsOptional()
   @IsString()
   coverUrl?: string;
+
+  @ApiProperty({
+    example: ['https://example.com/p1.jpg'],
+    required: false,
+    isArray: true,
+  })
+  @IsOptional()
+  @IsString({ each: true })
+  photos?: string[];
 }
 
 export class UpdateGalleryDto extends PartialType(CreateGalleryDto) {}
