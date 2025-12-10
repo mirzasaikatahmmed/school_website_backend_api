@@ -1,13 +1,13 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { NoticesController } from './notices.controller';
+import { NoticeController } from './notices.controller';
 import { NoticesService } from './notices.service';
 
 describe('NoticesController', () => {
-  let controller: NoticesController;
+  let controller: NoticeController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [NoticesController],
+      controllers: [NoticeController],
       // Provide a mock for NoticesService
       providers: [
         {
@@ -17,8 +17,7 @@ describe('NoticesController', () => {
       ],
     }).compile();
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-argument
-    controller = module.get<NoticesController>(NoticesController);
+    controller = module.get<NoticeController>(NoticeController);
   });
 
   it('should be defined', () => {

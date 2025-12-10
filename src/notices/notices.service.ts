@@ -16,7 +16,7 @@ export class NoticesService {
     return this.noticeRepository.save(notice);
   }
 
-  async findAll(page: number = 1, limit: number = 10) {
+  async findAll(page: number = 1, limit: number = 20) {
     const [items, total] = await this.noticeRepository.findAndCount({
       skip: (page - 1) * limit,
       take: limit,

@@ -1,6 +1,7 @@
 import { IsString, IsOptional, IsArray, ValidateNested } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { Notice } from '../entities/notice.entity';
 
 export class CreateNoticeAttachmentDto {
   @ApiProperty()
@@ -47,6 +48,13 @@ export class CreateNoticeDto {
   @IsOptional()
   @IsArray()
   @IsString({ each: true })
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      return [value];
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return value;
+  })
   categories?: string[];
 }
 
@@ -59,4 +67,18 @@ export class UpdateNoticeMultipartDto extends UpdateNoticeDto {
     required: false,
   })
   files?: any[];
+}
+
+export class NoticePaginationDto {
+  @ApiProperty({ type: [Notice] })
+  items: Notice[];
+
+  @ApiProperty({ example: 100 })
+  total: number;
+
+  @ApiProperty({ example: 1 })
+  page: number;
+
+  @ApiProperty({ example: 20 })
+  limit: number;
 }

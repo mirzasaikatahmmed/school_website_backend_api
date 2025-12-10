@@ -27,6 +27,7 @@ import {
   CreateNoticeDto,
   UpdateNoticeDto,
   UpdateNoticeMultipartDto,
+  NoticePaginationDto,
 } from './dto/notice.dto';
 import { Notice } from './entities/notice.entity';
 import { Public } from '../auth/decorators/public.decorator';
@@ -109,7 +110,11 @@ export class NoticeController {
   @Public()
   @Get()
   @ApiOperation({ summary: 'Get all notices (paginated)' })
-  @ApiResponse({ status: 200, description: 'List of notices.', type: [Notice] })
+  @ApiResponse({
+    status: 200,
+    description: 'List of notices.',
+    type: NoticePaginationDto,
+  })
   findAll(@Query('page') page = 1, @Query('limit') limit = 20) {
     return this.noticeService.findAll(Number(page), Number(limit));
   }
