@@ -109,14 +109,20 @@ export class NoticeController {
 
   @Public()
   @Get()
-  @ApiOperation({ summary: 'Get all notices (paginated)' })
+  @ApiOperation({ summary: 'Get notices - all or paginated' })
   @ApiResponse({
     status: 200,
     description: 'List of notices.',
     type: NoticePaginationDto,
   })
-  findAll(@Query('page') page = 1, @Query('limit') limit = 20) {
-    return this.noticeService.findAll(Number(page), Number(limit));
+  findAll(@Query('page') page?: number, @Query('limit') limit?: number) {
+    if (page !== undefined || limit !== undefined) {
+      return this.noticeService.findPaginated(
+        Number(page || 1),
+        Number(limit || 20),
+      );
+    }
+    return this.noticeService.findAll();
   }
 
   @Public()
@@ -172,8 +178,6 @@ export class NoticeController {
         dto.attachments = [];
       }
       files.forEach((file) => {
-        // Ensure we are not duplicating if the same file is uploaded (logic can be improved if needed)
-        // For now, valid uploads are appened.
         dto.attachments?.push({
           name: file.originalname,
           url: `/uploads/notices/${file.filename}`,

@@ -14,7 +14,8 @@ import { ResultsModule } from './results/results.module';
 import { ContactModule } from './contact/contact.module';
 import { PagesModule } from './pages/pages.module';
 import { HomeModule } from './home/home.module';
-import { StudentStatsModule } from './student-stats/student-stats.module';
+import { AcademicModule } from './academic/academic.module';
+import { SettingsModule } from './settings/settings.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { UsersModule } from './users/users.module';
@@ -46,6 +47,8 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
     ContactModule,
     PagesModule,
     HomeModule,
+    AcademicModule,
+    SettingsModule,
     UsersModule,
     StudentStatsModule,
     ServeStaticModule.forRoot({

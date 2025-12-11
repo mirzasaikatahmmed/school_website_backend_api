@@ -16,7 +16,13 @@ export class DownloadsService {
     return this.downloadRepository.save(download);
   }
 
-  async findAll(page: number = 1, limit: number = 20) {
+  async findAll() {
+    return await this.downloadRepository.find({
+      order: { uploadedAt: 'DESC' },
+    });
+  }
+
+  async findPaginated(page: number = 1, limit: number = 20) {
     const [items, total] = await this.downloadRepository.findAndCount({
       skip: (page - 1) * limit,
       take: limit,

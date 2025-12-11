@@ -105,14 +105,17 @@ export class DownloadsController {
 
   @Public()
   @Get()
-  @ApiOperation({ summary: 'Get all download resources' })
+  @ApiOperation({ summary: 'Get downloads - all or paginated' })
   @ApiResponse({
     status: 200,
     description: 'List of downloads.',
     type: [Download],
   })
-  findAll(@Query('page') page = 1, @Query('limit') limit = 20) {
-    return this.service.findAll(Number(page), Number(limit));
+  findAll(@Query('page') page?: number, @Query('limit') limit?: number) {
+    if (page !== undefined || limit !== undefined) {
+      return this.service.findPaginated(Number(page || 1), Number(limit || 20));
+    }
+    return this.service.findAll();
   }
 
   @Public()
