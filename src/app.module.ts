@@ -22,6 +22,7 @@ import { UsersModule } from './users/users.module';
 
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
+import { StudentStatsModule } from './student-stats/student-stats.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
     AcademicModule,
     SettingsModule,
     UsersModule,
+    StudentStatsModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),
       serveRoot: '/uploads',
