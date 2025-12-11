@@ -14,6 +14,7 @@ import { ResultsModule } from './results/results.module';
 import { ContactModule } from './contact/contact.module';
 import { PagesModule } from './pages/pages.module';
 import { HomeModule } from './home/home.module';
+import { StudentStatsModule } from './student-stats/student-stats.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { UsersModule } from './users/users.module';
@@ -46,6 +47,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
     PagesModule,
     HomeModule,
     UsersModule,
+    StudentStatsModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),
       serveRoot: '/uploads',
