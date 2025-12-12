@@ -5,7 +5,7 @@ import {
   IsBoolean,
   ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 
 export class CreateAdmissionAttachmentDto {
@@ -42,6 +42,13 @@ export class CreateAdmissionDto {
 
   @ApiProperty({ example: true, required: false })
   @IsOptional()
+  @Transform(({ value }) => {
+    if (value === undefined || value === null || value === '') return undefined;
+    if (typeof value === 'boolean') return value;
+    if (value === 'true' || value === '1') return true;
+    if (value === 'false' || value === '0') return false;
+    return Boolean(value);
+  })
   @IsBoolean()
   isActive?: boolean;
 }
