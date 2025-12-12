@@ -11,9 +11,10 @@ export class CreateDownloadDto {
   @IsString()
   description?: string;
 
-  @ApiProperty({ example: 'https://example.com/form.pdf' })
+  @ApiProperty({ example: 'https://example.com/form.pdf', required: false })
+  @IsOptional()
   @IsString()
-  fileUrl: string;
+  fileUrl?: string;
 
   @ApiProperty({ example: 'forms', required: false })
   @IsOptional()

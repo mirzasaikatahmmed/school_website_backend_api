@@ -16,9 +16,10 @@ export class CreateResultDto {
   @IsString()
   year?: string;
 
-  @ApiProperty({ example: 'https://example.com/result.pdf' })
+  @ApiProperty({ example: 'https://example.com/result.pdf', required: false })
+  @IsOptional()
   @IsString()
-  fileUrl: string;
+  fileUrl?: string;
 }
 
 export class UpdateResultDto extends PartialType(CreateResultDto) {}
