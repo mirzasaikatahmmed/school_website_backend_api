@@ -2,27 +2,33 @@ import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsString, IsNotEmpty, IsBoolean, IsOptional } from 'class-validator';
 import { Transform } from 'class-transformer';
 
+const trimString = (value: unknown): string =>
+  typeof value === 'string' ? value.trim() : '';
+
+const trimOptionalString = (value: unknown): string | undefined =>
+  typeof value === 'string' ? value.trim() : undefined;
+
 export class CreateSchoolHistoryDto {
   @ApiProperty({ description: 'Main heading' })
-  @Transform(({ value }) => value?.trim())
+  @Transform(({ value }) => trimString(value))
   @IsString()
   @IsNotEmpty()
   heading: string;
 
   @ApiProperty({ description: 'Subheading text' })
-  @Transform(({ value }) => value?.trim())
+  @Transform(({ value }) => trimString(value))
   @IsString()
   @IsNotEmpty()
   subheading: string;
 
   @ApiProperty({ description: 'First paragraph' })
-  @Transform(({ value }) => value?.trim())
+  @Transform(({ value }) => trimString(value))
   @IsString()
   @IsNotEmpty()
   paragraph1: string;
 
   @ApiProperty({ description: 'Second paragraph', required: false })
-  @Transform(({ value }) => value?.trim())
+  @Transform(({ value }) => trimOptionalString(value))
   @IsString()
   @IsOptional()
   paragraph2?: string;
