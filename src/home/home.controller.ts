@@ -1060,10 +1060,23 @@ export class HomeController {
   }
 
   // School History endpoints
+  @ApiBearerAuth()
   @Post('school-history')
+  @UseInterceptors(FileInterceptor('dummy'))
   @ApiOperation({ summary: 'Create or update school history content' })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({ type: CreateSchoolHistoryDto })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        heading: { type: 'string' },
+        subheading: { type: 'string' },
+        paragraph1: { type: 'string' },
+        paragraph2: { type: 'string' },
+        isActive: { type: 'boolean' },
+      },
+    },
+  })
   @ApiResponse({ status: 201, description: 'School history created/updated.' })
   @ApiResponse({ status: 400, description: 'Bad request.' })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
@@ -1079,6 +1092,7 @@ export class HomeController {
     return this.homeService.findSchoolHistory();
   }
 
+  @ApiBearerAuth()
   @Get('school-history/all')
   @ApiOperation({ summary: 'Get all school history records (Admin)' })
   @ApiResponse({ status: 200, description: 'All school history records.' })
@@ -1087,6 +1101,7 @@ export class HomeController {
     return this.homeService.findAllSchoolHistory();
   }
 
+  @ApiBearerAuth()
   @Get('school-history/:id')
   @ApiOperation({ summary: 'Get school history by ID' })
   @ApiResponse({ status: 200, description: 'School history found.' })
@@ -1096,6 +1111,7 @@ export class HomeController {
     return this.homeService.findOneSchoolHistory(id);
   }
 
+  @ApiBearerAuth()
   @Patch('school-history/:id')
   @ApiOperation({ summary: 'Update school history' })
   @ApiConsumes('multipart/form-data')
@@ -1111,6 +1127,7 @@ export class HomeController {
     return this.homeService.updateSchoolHistory(id, updateSchoolHistoryDto);
   }
 
+  @ApiBearerAuth()
   @Delete('school-history/:id')
   @ApiOperation({ summary: 'Delete school history' })
   @ApiResponse({ status: 200, description: 'School history deleted.' })
@@ -1121,10 +1138,22 @@ export class HomeController {
   }
 
   // History Milestone endpoints
+  @ApiBearerAuth()
   @Post('history-milestones')
+  @UseInterceptors(FileInterceptor('dummy'))
   @ApiOperation({ summary: 'Create a new history milestone' })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({ type: CreateHistoryMilestoneDto })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        year: { type: 'string' },
+        description: { type: 'string' },
+        order: { type: 'number' },
+        isActive: { type: 'boolean' },
+      },
+    },
+  })
   @ApiResponse({ status: 201, description: 'History milestone created.' })
   @ApiResponse({ status: 400, description: 'Bad request.' })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
@@ -1142,6 +1171,7 @@ export class HomeController {
     return this.homeService.findAllHistoryMilestones();
   }
 
+  @ApiBearerAuth()
   @Get('history-milestones/admin')
   @ApiOperation({ summary: 'Get all history milestones (Admin)' })
   @ApiResponse({ status: 200, description: 'All milestones retrieved.' })
@@ -1150,6 +1180,7 @@ export class HomeController {
     return this.homeService.findAllHistoryMilestonesAdmin();
   }
 
+  @ApiBearerAuth()
   @Get('history-milestones/:id')
   @ApiOperation({ summary: 'Get history milestone by ID' })
   @ApiResponse({ status: 200, description: 'Milestone found.' })
@@ -1159,10 +1190,22 @@ export class HomeController {
     return this.homeService.findOneHistoryMilestone(id);
   }
 
+  @ApiBearerAuth()
   @Patch('history-milestones/:id')
+  @UseInterceptors(FileInterceptor('dummy'))
   @ApiOperation({ summary: 'Update history milestone' })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({ type: UpdateHistoryMilestoneDto })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        year: { type: 'string' },
+        description: { type: 'string' },
+        order: { type: 'number' },
+        isActive: { type: 'boolean' },
+      },
+    },
+  })
   @ApiResponse({ status: 200, description: 'Milestone updated.' })
   @ApiResponse({ status: 400, description: 'Bad request.' })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
@@ -1177,6 +1220,7 @@ export class HomeController {
     );
   }
 
+  @ApiBearerAuth()
   @Patch('history-milestones/:id/reorder')
   @ApiOperation({ summary: 'Reorder history milestone' })
   @ApiBody({ type: ReorderHistoryMilestoneDto })
@@ -1190,6 +1234,7 @@ export class HomeController {
     return this.homeService.reorderHistoryMilestone(id, reorderDto.order);
   }
 
+  @ApiBearerAuth()
   @Delete('history-milestones/:id')
   @ApiOperation({ summary: 'Delete history milestone' })
   @ApiResponse({ status: 200, description: 'Milestone deleted.' })
@@ -1200,10 +1245,22 @@ export class HomeController {
   }
 
   // Infrastructure Category endpoints
+  @ApiBearerAuth()
   @Post('infrastructure-categories')
+  @UseInterceptors(FileInterceptor('dummy'))
   @ApiOperation({ summary: 'Create a new infrastructure category' })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({ type: CreateInfrastructureCategoryDto })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        description: { type: 'string' },
+        order: { type: 'number' },
+        isActive: { type: 'boolean' },
+      },
+    },
+  })
   @ApiResponse({
     status: 201,
     description: 'Infrastructure category created.',
@@ -1224,6 +1281,7 @@ export class HomeController {
     return this.homeService.findAllInfrastructureCategories();
   }
 
+  @ApiBearerAuth()
   @Get('infrastructure-categories/admin')
   @ApiOperation({ summary: 'Get all infrastructure categories (Admin)' })
   @ApiResponse({ status: 200, description: 'All categories retrieved.' })
@@ -1232,6 +1290,7 @@ export class HomeController {
     return this.homeService.findAllInfrastructureCategoriesAdmin();
   }
 
+  @ApiBearerAuth()
   @Get('infrastructure-categories/:id')
   @ApiOperation({ summary: 'Get infrastructure category by ID' })
   @ApiResponse({ status: 200, description: 'Category found.' })
@@ -1241,10 +1300,22 @@ export class HomeController {
     return this.homeService.findOneInfrastructureCategory(id);
   }
 
+  @ApiBearerAuth()
   @Patch('infrastructure-categories/:id')
+  @UseInterceptors(FileInterceptor('dummy'))
   @ApiOperation({ summary: 'Update infrastructure category' })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({ type: UpdateInfrastructureCategoryDto })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        description: { type: 'string' },
+        order: { type: 'number' },
+        isActive: { type: 'boolean' },
+      },
+    },
+  })
   @ApiResponse({ status: 200, description: 'Category updated.' })
   @ApiResponse({ status: 400, description: 'Bad request.' })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
@@ -1256,6 +1327,7 @@ export class HomeController {
     return this.homeService.updateInfrastructureCategory(id, updateDto);
   }
 
+  @ApiBearerAuth()
   @Patch('infrastructure-categories/:id/reorder')
   @ApiOperation({ summary: 'Reorder infrastructure category' })
   @ApiBody({ type: ReorderInfrastructureCategoryDto })
@@ -1269,6 +1341,7 @@ export class HomeController {
     return this.homeService.reorderInfrastructureCategory(id, reorderDto.order);
   }
 
+  @ApiBearerAuth()
   @Delete('infrastructure-categories/:id')
   @ApiOperation({ summary: 'Delete infrastructure category' })
   @ApiResponse({ status: 200, description: 'Category deleted.' })
