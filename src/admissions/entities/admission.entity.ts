@@ -32,6 +32,18 @@ export class Admission {
   @Column({ nullable: true })
   admissionYear: string; // e.g., "2025"
 
+  @ApiProperty({ description: 'Form distribution start date', required: false })
+  @Column({ nullable: true })
+  formDistributionDate: string;
+
+  @ApiProperty({ description: 'Last submission date', required: false })
+  @Column({ nullable: true })
+  lastSubmissionDate: string;
+
+  @ApiProperty({ description: 'Admission test date', required: false })
+  @Column({ nullable: true })
+  admissionTestDate: string;
+
   @ApiProperty({
     description: 'Is the circular currently active?',
     default: true,
