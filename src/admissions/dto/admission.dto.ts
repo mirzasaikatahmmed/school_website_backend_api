@@ -8,6 +8,9 @@ import {
 import { Type, Transform } from 'class-transformer';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 
+const trimOptionalString = (value: unknown): string | undefined =>
+  typeof value === 'string' ? value.trim() : undefined;
+
 export class CreateAdmissionAttachmentDto {
   @ApiProperty()
   @IsString()
@@ -38,7 +41,38 @@ export class CreateAdmissionDto {
   @ApiProperty({ example: '2025', required: false })
   @IsOptional()
   @IsString()
+  @Transform(({ value }) => trimOptionalString(value))
   admissionYear?: string;
+
+  @ApiProperty({
+    example: '2025-11-01',
+    description: 'Form distribution starts',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }) => trimOptionalString(value))
+  formDistributionDate?: string;
+
+  @ApiProperty({
+    example: '2025-12-15',
+    description: 'Last date for submission',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }) => trimOptionalString(value))
+  lastSubmissionDate?: string;
+
+  @ApiProperty({
+    example: '2025-12-22',
+    description: 'Admission test date',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }) => trimOptionalString(value))
+  admissionTestDate?: string;
 
   @ApiProperty({ example: true, required: false })
   @IsOptional()
