@@ -79,6 +79,21 @@ export class AdmissionsController {
           type: 'string',
           example: '2025',
         },
+        formDistributionDate: {
+          type: 'string',
+          example: '2025-11-01',
+          description: 'Form distribution starts (date string)',
+        },
+        lastSubmissionDate: {
+          type: 'string',
+          example: '2025-12-15',
+          description: 'Last date for submission (date string)',
+        },
+        admissionTestDate: {
+          type: 'string',
+          example: '2025-12-22',
+          description: 'Admission test date (date string)',
+        },
         isActive: {
           type: 'boolean',
           example: true,
@@ -183,6 +198,21 @@ export class AdmissionsController {
         admissionYear: {
           type: 'string',
           example: '2025',
+        },
+        formDistributionDate: {
+          type: 'string',
+          example: '2025-11-01',
+          description: 'Form distribution starts (date string)',
+        },
+        lastSubmissionDate: {
+          type: 'string',
+          example: '2025-12-15',
+          description: 'Last date for submission (date string)',
+        },
+        admissionTestDate: {
+          type: 'string',
+          example: '2025-12-22',
+          description: 'Admission test date (date string)',
         },
         isActive: {
           type: 'boolean',

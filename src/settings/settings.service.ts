@@ -2,6 +2,7 @@ import {
   Injectable,
   NotFoundException,
   InternalServerErrorException,
+  BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -18,25 +19,27 @@ export class SettingsService {
     private readonly settingsRepository: Repository<SchoolSettings>,
   ) {}
 
+  private async getExistingSettings(): Promise<SchoolSettings | null> {
+    return this.settingsRepository.findOne({ order: { createdAt: 'DESC' } });
+  }
+
   async createOrUpdateSettings(
     createDto: CreateSchoolSettingsDto,
   ): Promise<SchoolSettings> {
     try {
-      // Check if settings already exist
-      const existingSettings = await this.settingsRepository.findOne({
-        where: {},
-      });
-
+      const existingSettings = await this.getExistingSettings();
       if (existingSettings) {
-        // Update existing settings
-        Object.assign(existingSettings, createDto);
-        return await this.settingsRepository.save(existingSettings);
-      } else {
-        // Create new settings
-        const settings = this.settingsRepository.create(createDto);
-        return await this.settingsRepository.save(settings);
+        throw new BadRequestException(
+          'Settings already exist. Use PATCH to update the existing record.',
+        );
       }
+
+      const settings = this.settingsRepository.create(createDto);
+      return await this.settingsRepository.save(settings);
     } catch (error: unknown) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
       const message = error instanceof Error ? error.message : 'Unknown error';
       throw new InternalServerErrorException(
         'Failed to create/update school settings',
@@ -49,6 +52,7 @@ export class SettingsService {
     try {
       const settings = await this.settingsRepository.findOne({
         where: { isActive: true },
+        order: { createdAt: 'DESC' },
       });
       if (!settings) {
         throw new NotFoundException('School settings not found');
@@ -70,6 +74,7 @@ export class SettingsService {
     try {
       return await this.settingsRepository.find({
         order: { createdAt: 'DESC' },
+        take: 1,
       });
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Unknown error';
